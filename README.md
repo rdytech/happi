@@ -20,8 +20,11 @@ Or install it yourself as:
 
     require 'happi'
 
+    Happi::Client.configure do |config|
+      config.base_url = 'http://localhost:3000'
+    end
+
     client = Happi::Client.new(
-      base_url: 'http://localhost:3000',
       oauth_token: '63ba06720acf97959f5ba3e3fe1020bf69a7596e2fe3091f821a35cdfe615ceb')
 
     templates = client.get('templates')[:templates]

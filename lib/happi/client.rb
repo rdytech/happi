@@ -9,6 +9,16 @@ class Happi::Client
     @config ||= Happi::Configuration.new
   end
 
+  def self.configure
+    yield config
+  end
+
+  def initialize(options = {})
+    options.each do |key, value|
+      self.config.send("#{key}=", value)
+    end
+  end
+
   def get(resource, params = {})
     call(:get, url(resource), param_check(params))
         .body.with_indifferent_access
