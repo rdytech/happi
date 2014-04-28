@@ -4,23 +4,9 @@ require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 
 class Happi::Client
-  DEFAULTS = {
-    host: 'http://localhost:8080',
-    port: 443,
-    timeout: 60,
-    version: 'v1'
-  }
 
-  attr_accessor :oauth_token, :host, :port, :timeout, :version
-
-  def initialize(options = {})
-    DEFAULTS.merge(options).each do |key, value|
-      send("#{key}=", value)
-    end
-
-    if block_given?
-      yield
-    end
+  def self.config
+    @config ||= Happi::Configuration.new
   end
 
   def get(resource, params = {})
@@ -77,9 +63,9 @@ class Happi::Client
   end
 
   def connection
-    @connection ||= Faraday.new(host) do |f|
+    @connection ||= Faraday.new(self.config.host) do |f|
       f.request :multipart
-      f.use FaradayMiddleware::OAuth2, oauth_token
+      f.use FaradayMiddleware::OAuth2, self.config.oauth_token
       f.use FaradayMiddleware::ParseJson, content_type: 'application/json'
       f.request :url_encoded
       f.adapter :net_http

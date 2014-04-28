@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Happi::VERSION
   spec.authors       = ["John D'Agostino"]
   spec.email         = ["john.dagostino@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.description   = %q{Simple faraday client preconfigured}
+  spec.summary       = %q{Simple faraday client wrapper preconfigured for specific usecase}
+  spec.homepage      = "http://github.com/jobready/happi"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
