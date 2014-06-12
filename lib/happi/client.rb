@@ -4,9 +4,12 @@ require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 
 class Happi::Client
+  CONFIG_CLASS = 'Happi::Configuration'
+
+  delegate :config, to: :class
 
   def self.config
-    @config ||= Happi::Configuration.new
+    @config ||= CONFIG_CLASS.constantize.new
   end
 
   def self.configure
@@ -15,7 +18,7 @@ class Happi::Client
 
   def initialize(options = {})
     options.each do |key, value|
-      self.config.send("#{key}=", value)
+      config.send("#{key}=", value)
     end
   end
 
@@ -35,7 +38,7 @@ class Happi::Client
   end
 
   def url(resource)
-    "/api/#{version}/#{resource}"
+    "/api/#{config.version}/#{resource}"
   end
 
   def call(method, url, params)
@@ -63,8 +66,7 @@ class Happi::Client
     Hash[params.map do |key, value|
       if value.is_a? Hash
         [key, param_check(value)]
-      end
-      if value.respond_to?(:multipart)
+      elsif value.respond_to?(:multipart)
         [key, value.multipart]
       else
         [key, value]
@@ -73,9 +75,9 @@ class Happi::Client
   end
 
   def connection
-    @connection ||= Faraday.new(self.config.host) do |f|
+    @connection ||= Faraday.new(config.host) do |f|
       f.request :multipart
-      f.use FaradayMiddleware::OAuth2, self.config.oauth_token
+      f.use FaradayMiddleware::OAuth2, config.oauth_token
       f.use FaradayMiddleware::ParseJson, content_type: 'application/json'
       f.request :url_encoded
       f.adapter :net_http
