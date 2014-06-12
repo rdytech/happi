@@ -4,12 +4,11 @@ require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 
 class Happi::Client
-  CONFIG_CLASS = 'Happi::Configuration'
 
   delegate :config, to: :class
 
   def self.config
-    @config ||= CONFIG_CLASS.constantize.new
+    @config ||= Happi::Configuration.new
   end
 
   def self.configure
