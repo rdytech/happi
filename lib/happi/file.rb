@@ -2,9 +2,16 @@ require 'mime/types'
 
 class Happi::File
   attr_accessor :file_name
+  attr_accessor :mime_type
 
-  def initialize(file_name)
-    @file_name = file_name
+  def initialize(file)
+    if file.is_a?(String)
+      @mime_type = MIME::Types.type_for(file).first.content_type
+      @file_name = file
+    else
+      @mime_type = file.content_type
+      @file_name = file.path
+    end
   end
 
   def exists?
@@ -13,10 +20,6 @@ class Happi::File
 
   def multipart
     Faraday::UploadIO.new(file_name, mime_type) if exists?
-  end
-
-  def mime_type
-    MIME::Types.type_for(file_name).first.content_type
   end
 
   def encode_file
