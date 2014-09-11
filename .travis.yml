@@ -1,0 +1,12 @@
+language: ruby
+rvm:
+  - 2.1.1
+  - 2.0.0
+gemfile:
+  - Gemfile.rails41
+  - Gemfile.rails32
+  - Gemfile
+branches:
+  only:
+    - develop
+    - master

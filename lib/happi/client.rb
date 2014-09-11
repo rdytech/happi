@@ -4,8 +4,7 @@ require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 
 class Happi::Client
-
-  delegate :config, to: :class
+  delegate :config, to: self
 
   def self.config
     @config ||= Happi::Configuration.new
