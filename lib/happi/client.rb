@@ -58,7 +58,15 @@ class Happi::Client
   end
 
   def logger
-    @logger ||= Logger.new(STDOUT)
+    @logger ||= default_logger
+  end
+
+  def default_logger
+    if defined?(Rails)
+      Rails.logger
+    else
+      Logger.new(STDOUT)
+    end
   end
 
   def param_check(params)
