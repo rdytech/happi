@@ -62,7 +62,7 @@ class Happi::Client
 
   def default_logger
     if defined?(Rails)
-      Rails.logger
+      Rails.try(:logger) || Logger.new(STDOUT)
     else
       Logger.new(STDOUT)
     end
