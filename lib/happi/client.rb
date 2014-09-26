@@ -25,6 +25,11 @@ class Happi::Client
         .body.with_indifferent_access
   end
 
+  def delete(resource, params = {})
+    call(:delete, url(resource), param_check(params))
+        .body.with_indifferent_access
+  end
+
   def patch(resource, params = {})
     call(:patch, url(resource), param_check(params))
         .body.with_indifferent_access
