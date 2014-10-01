@@ -21,7 +21,7 @@ Or install it yourself as:
     require 'happi'
 
     Happi::Client.configure do |config|
-      config.base_url = 'http://localhost:3000'
+      config.host = 'http://localhost:3000'
     end
 
     client = Happi::Client.new(
@@ -54,6 +54,18 @@ Or install it yourself as:
         params: JSON.dump({name: 'Test'}) } )[:document]
 
     puts document[:id]
+
+## Configuration
+
+```ruby
+Happi::Client.configure do |config|
+    host: 'http://localhost:8080',
+    port: 443,
+    timeout: 60,
+    version: 'v1'
+    use_json: false
+end
+```
 
 ## Contributing
 
