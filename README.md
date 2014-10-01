@@ -59,11 +59,11 @@ Or install it yourself as:
 
 ```ruby
 Happi::Client.configure do |config|
-    host: 'http://localhost:8080',
-    port: 443,
-    timeout: 60,
-    version: 'v1'
-    use_json: false
+  config.host = 'http://localhost:8080'
+  config.port = 443
+  config.timeout = 60
+  config.version = 'v1'
+  config.use_json = false
 end
 ```
 
