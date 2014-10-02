@@ -89,7 +89,6 @@ class Happi::Client
     @connection ||= Faraday.new(config.host) do |f|
       f.use FaradayMiddleware::OAuth2, config.oauth_token
       f.use FaradayMiddleware::ParseJson, content_type: 'application/json'
-      f.adapter :net_http
 
       if self.config.use_json
         f.use FaradayMiddleware::EncodeJson
@@ -99,6 +98,8 @@ class Happi::Client
         f.request :multipart
         f.request :url_encoded
       end
+
+      f.adapter :net_http
     end
   end
 
