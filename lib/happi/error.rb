@@ -1,13 +1,58 @@
 class Happi::Error < Exception
-  class ClientError < self; end
-  class BadRequest < ClientError; end
-  class Unauthorized < ClientError; end
-  class Forbidden < ClientError; end
-  class NotFound < ClientError; end
-  class NotAcceptable < ClientError; end
-  class RequestTimeout < ClientError; end
-  class UnprocessableEntity < ClientError; end
-  class ServerError < self; end
+  class ClientError < self
+    def message
+      "A client error occurred"
+    end
+  end
+
+  class BadRequest < ClientError
+    def message
+      "The request was incorrectly performed"
+    end
+  end
+
+  class Unauthorized < ClientError
+    def message
+      "The request was not authorized"
+    end
+  end
+
+  class Forbidden < ClientError
+    def message
+      "The request was denied"
+    end
+  end
+
+  class NotFound < ClientError
+    def message
+      "The requested resource was not found"
+    end
+  end
+
+  class NotAcceptable < ClientError
+    def message
+      "The requested format was not accepted"
+    end
+  end
+
+  class RequestTimeout < ClientError
+    def message
+      "The request timed out"
+    end
+  end
+
+  class UnprocessableEntity < ClientError
+    def message
+      "The request was not able to be processed"
+    end
+  end
+
+  class ServerError < self
+    def message
+      "A server error occurred"
+    end
+  end
+
   class InternalServerError < ServerError; end
   class BadGateway < ServerError; end
   class TooManyRequests < ServerError; end
