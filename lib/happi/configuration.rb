@@ -5,11 +5,12 @@ class Happi::Configuration
     port: 443,
     timeout: 60,
     version: 'v1',
-    use_json: false
+    use_json: false,
+    log_level: :info
     }
   end
 
-  attr_accessor :oauth_token, :host, :port, :timeout, :version, :use_json
+  attr_accessor :oauth_token, :host, :port, :timeout, :version, :use_json, :log_level
 
   def initialize(options = {})
     self.class.defaults.merge(options).each do |key, value|

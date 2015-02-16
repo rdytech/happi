@@ -45,7 +45,12 @@ class Happi::Client
   end
 
   def call(method, url, params)
-    logger.info("#{method}, #{url}, #{params}")
+    if config.log_level == :debug
+      logger.debug("Happi: #{method.upcase} #{config.host}#{url}, #{params}")
+    else
+      logger.info("Happi: #{method.upcase} #{config.host}#{url}")
+    end
+
     response = connection.send(method, url, params)
     raise_error(response) if errors[response.status]
     response
