@@ -1,4 +1,4 @@
-class Happi::Error < Exception
+class Happi::Error < StandardError
   class ClientError < self
     def message
       "A client error occurred"
