@@ -4,10 +4,12 @@ require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 
 class Happi::Client
-  delegate :config, to: self
+  def config
+    @config ||= self.class.config.dup
+  end
 
   def self.config
-    @config ||= Happi::Configuration.new
+    @global_config ||= Happi::Configuration.new
   end
 
   def self.configure
