@@ -65,7 +65,7 @@ class Happi::Client
       message = response.body
     end
 
-    fail errors[response.status].new(message)
+    fail errors[response.status].new(message, response)
   end
 
   def logger
