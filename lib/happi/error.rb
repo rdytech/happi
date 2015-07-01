@@ -1,12 +1,12 @@
 class Happi::Error < StandardError
+  attr_reader :response
+
+  def initialize(msg = nil, response = nil)
+    super(msg)
+    @response = response
+  end
+
   class ClientError < self
-    attr_reader :response
-
-    def initialize(msg = nil, response = nil)
-      super(msg)
-      @response = response
-    end
-
     def message
       "A client error occurred"
     end
