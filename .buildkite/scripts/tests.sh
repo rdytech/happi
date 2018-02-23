@@ -7,7 +7,7 @@ rbenv local 2.1.5
 rbenv rehash
 
 echo '--- bundling'
-bundle install -j $(nproc)
+bundle install -j $(nproc) --with=development
 
 echo '--- running specs'
 bundle exec rspec
