@@ -79,4 +79,24 @@ describe Happi::Client do
       end
     end
   end
+
+  describe '#connection_options' do
+    subject { client.connection_options }
+
+    context 'where config.token_type present' do
+      let(:client) { described_class.new(token_type: 'bearer') }
+
+      specify do
+        expect(subject).to eq(token_type: 'bearer')
+      end
+    end
+
+    context 'where config.token_type not present' do
+      let(:client) { described_class.new }
+
+      specify do
+        expect(subject).to eq({})
+      end
+    end
+  end
 end

@@ -94,7 +94,7 @@ class Happi::Client
 
   def connection
     @connection ||= Faraday.new(config.host) do |f|
-      f.use FaradayMiddleware::OAuth2, config.oauth_token
+      f.use FaradayMiddleware::OAuth2, config.oauth_token, connection_options
       f.use FaradayMiddleware::ParseJson, content_type: 'application/json'
 
       if self.config.use_json
@@ -107,6 +107,14 @@ class Happi::Client
       end
 
       f.adapter :net_http
+    end
+  end
+
+  def connection_options
+    if config.token_type.present?
+      { token_type: config.token_type }
+    else
+      { }
     end
   end
 
