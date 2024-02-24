@@ -17,7 +17,7 @@ class Happi::File
   end
 
   def exists?
-    File.exists?(file_name)
+    File.exist?(file_name)
   end
 
   def multipart
