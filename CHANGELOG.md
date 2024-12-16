@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.6.0] - 2024-11-13
+### Added
+- Adds support for Ruby 3.2
+
+
 ## [0.4.0] - 2019-03-05
 ### Added
 - Set original file names for multipart Happi files
