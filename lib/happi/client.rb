@@ -1,5 +1,7 @@
 require 'faraday'
-require 'faraday_middleware'
+require 'faraday/follow_redirects'
+require 'faraday/multipart'
+require 'faraday/http'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 
@@ -95,7 +97,7 @@ class Happi::Client
   def connection
     @connection ||= Faraday.new(config.host) do |f|
       f.use FaradayMiddleware::OAuth2, config.oauth_token, connection_options
-      f.use FaradayMiddleware::ParseJson, content_type: 'application/json'
+      f.use JSON, content_type: 'application/json'
 
       if self.config.use_json
         f.use FaradayMiddleware::EncodeJson

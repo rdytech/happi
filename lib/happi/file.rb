@@ -1,4 +1,6 @@
 require 'mime/types'
+require 'base64'
+require 'faraday/multipart'
 
 class Happi::File
   attr_accessor :file_name

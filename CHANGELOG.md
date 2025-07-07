@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.0.0-rc] - 2025-07-07
+### Updated
+- Updated all gem dependencies
+- Set ruby version min to 3.2.0
+
+
 ## [0.6.0] - 2024-11-13
 ### Added
 - Adds support for Ruby 3.2
