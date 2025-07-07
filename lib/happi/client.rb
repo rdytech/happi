@@ -1,13 +1,17 @@
 require 'faraday'
-require 'faraday_middleware'
+require 'faraday/follow_redirects'
+require 'faraday/multipart'
+require 'faraday/http'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 
 class Happi::Client
-  delegate :config, to: self
+  def config
+    @config ||= self.class.config.dup
+  end
 
   def self.config
-    @config ||= Happi::Configuration.new
+    @global_config ||= Happi::Configuration.new
   end
 
   def self.configure
@@ -63,7 +67,7 @@ class Happi::Client
       message = response.body
     end
 
-    fail errors[response.status].new(message)
+    fail errors[response.status].new(message, response)
   end
 
   def logger
@@ -92,8 +96,8 @@ class Happi::Client
 
   def connection
     @connection ||= Faraday.new(config.host) do |f|
-      f.use FaradayMiddleware::OAuth2, config.oauth_token
-      f.use FaradayMiddleware::ParseJson, content_type: 'application/json'
+      f.use FaradayMiddleware::OAuth2, config.oauth_token, connection_options
+      f.use JSON, content_type: 'application/json'
 
       if self.config.use_json
         f.use FaradayMiddleware::EncodeJson
@@ -105,6 +109,14 @@ class Happi::Client
       end
 
       f.adapter :net_http
+    end
+  end
+
+  def connection_options
+    if config.token_type.present?
+      { token_type: config.token_type }
+    else
+      { }
     end
   end
 

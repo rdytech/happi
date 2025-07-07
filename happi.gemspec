@@ -10,22 +10,25 @@ Gem::Specification.new do |spec|
   spec.email         = ["john.dagostino@gmail.com"]
   spec.description   = %q{Simple faraday client preconfigured}
   spec.summary       = %q{Simple faraday client wrapper preconfigured for specific usecase}
-  spec.homepage      = "http://github.com/jobready/happi"
+  spec.homepage      = "https://github.com/rdytech/happi"
   spec.license       = "MIT"
+  spec.required_ruby_version = '>= 3.2.0'
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'faraday', '~> 0.9'
-  spec.add_dependency 'faraday_middleware', '~> 0.9'
-  spec.add_dependency 'activemodel', '>= 3.2'
-  spec.add_dependency 'oauth2', '~> 1.0'
-  spec.add_dependency 'mime-types', '>= 1.1.6'
-  spec.add_dependency 'multi_json', '~> 1.3'
+  spec.add_dependency 'faraday', '~> 2.13'
+  spec.add_dependency 'faraday-follow_redirects', '~> 0.3'
+  spec.add_dependency 'faraday-http', '~> 2.0'
+  spec.add_dependency 'faraday-multipart', '~> 1.1'
+  spec.add_dependency 'activemodel', '>= 6.0'
+  spec.add_dependency 'oauth2', '~> 2.0'
+  spec.add_dependency 'mime-types', '~> 3.7'
+  spec.add_dependency 'multi_json', '~> 1.15'
 
-  spec.add_development_dependency 'bundler', '~> 1.3'
+  spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'cane'
   spec.add_development_dependency 'rake'
