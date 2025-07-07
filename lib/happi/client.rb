@@ -2,6 +2,7 @@ require 'faraday'
 require 'faraday/follow_redirects'
 require 'faraday/multipart'
 require 'faraday/http'
+require 'faraday/oauth'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 
@@ -96,11 +97,11 @@ class Happi::Client
 
   def connection
     @connection ||= Faraday.new(config.host) do |f|
-      f.use FaradayMiddleware::OAuth2, config.oauth_token, connection_options
+      f.use Faraday::OAuth, config.oauth_token, connection_options
+      f.use Faraday::FollowRedirects::Middleware
       f.use JSON, content_type: 'application/json'
 
       if self.config.use_json
-        f.use FaradayMiddleware::EncodeJson
         f.request :json
         f.response :json
       else
@@ -108,7 +109,7 @@ class Happi::Client
         f.request :url_encoded
       end
 
-      f.adapter :net_http
+      f.adapter :http
     end
   end
 

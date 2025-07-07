@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faraday-follow_redirects', '~> 0.3'
   spec.add_dependency 'faraday-http', '~> 2.0'
   spec.add_dependency 'faraday-multipart', '~> 1.1'
+  spec.add_dependency 'faraday-oauth', '~> 0.1'
   spec.add_dependency 'activemodel', '>= 6.0'
   spec.add_dependency 'oauth2', '~> 2.0'
   spec.add_dependency 'mime-types', '~> 3.7'
