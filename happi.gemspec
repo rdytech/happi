@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Simple faraday client wrapper preconfigured for specific usecase}
   spec.homepage      = "https://github.com/rdytech/happi"
   spec.license       = "MIT"
-  spec.required_ruby_version = '>= 3.2.0'
+  spec.required_ruby_version = '>= 3.2.0' # faraday gem supports only non-EOL versions of Ruby
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
