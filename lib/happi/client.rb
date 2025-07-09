@@ -2,7 +2,6 @@ require 'faraday'
 require 'faraday/follow_redirects'
 require 'faraday/multipart'
 require 'faraday/http'
-require 'faraday/oauth'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 
@@ -97,9 +96,8 @@ class Happi::Client
 
   def connection
     @connection ||= Faraday.new(config.host) do |f|
-      f.use Faraday::OAuth, config.oauth_token, connection_options
-      f.use Faraday::FollowRedirects::Middleware
-      f.use JSON, content_type: 'application/json'
+      f.request :authorization, 'Bearer', -> { config.oauth_token }
+      f.use Faraday::FollowRedirects::Middleware, limit: 3
 
       if self.config.use_json
         f.request :json
