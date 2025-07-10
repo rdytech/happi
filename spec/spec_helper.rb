@@ -1,4 +1,6 @@
 require 'simplecov'
+require 'pry'
+
 SimpleCov.start
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), *%w[.. lib])

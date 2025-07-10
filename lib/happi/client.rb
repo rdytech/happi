@@ -106,7 +106,7 @@ class Happi::Client
   def connection
     @connection ||= Faraday.new(config.host) do |f|
       f.request :authorization, 'Bearer', -> { config.oauth_token }
-      f.request :retry, retry_options
+      f.request :retry, **retry_options
       f.use Faraday::FollowRedirects::Middleware  # default limit is 3
 
       if self.config.use_json
