@@ -1,6 +1,7 @@
 require 'faraday'
 require 'faraday/follow_redirects'
 require 'faraday/multipart'
+require 'faraday/retry'
 require 'faraday/http'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
@@ -94,13 +95,22 @@ class Happi::Client
     end]
   end
 
+  def retry_options
+    {
+      max: 3,
+      interval: 0.05,
+      interval_randomness: 0.5,
+      backoff_factor: 2
+    }
+  end
+
   def connection
     @connection ||= Faraday.new(config.host) do |f|
-      f.use FaradayMiddleware::OAuth2, config.oauth_token, connection_options
-      f.use JSON, content_type: 'application/json'
+      f.request :authorization, 'Bearer', -> { config.oauth_token }
+      f.request :retry, **retry_options
+      f.use Faraday::FollowRedirects::Middleware  # default limit is 3
 
       if self.config.use_json
-        f.use FaradayMiddleware::EncodeJson
         f.request :json
         f.response :json
       else
@@ -108,7 +118,7 @@ class Happi::Client
         f.request :url_encoded
       end
 
-      f.adapter :net_http
+      f.adapter :http
     end
   end
 

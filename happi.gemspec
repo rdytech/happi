@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Simple faraday client wrapper preconfigured for specific usecase}
   spec.homepage      = "https://github.com/rdytech/happi"
   spec.license       = "MIT"
-  spec.required_ruby_version = '>= 3.2.0'
+  spec.required_ruby_version = '>= 3.2.0' # faraday gem supports only non-EOL versions of Ruby
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
@@ -23,8 +23,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faraday-follow_redirects', '~> 0.3'
   spec.add_dependency 'faraday-http', '~> 2.0'
   spec.add_dependency 'faraday-multipart', '~> 1.1'
+  spec.add_dependency 'faraday-retry', '~> 2.3'
   spec.add_dependency 'activemodel', '>= 6.0'
-  spec.add_dependency 'oauth2', '~> 2.0'
   spec.add_dependency 'mime-types', '~> 3.7'
   spec.add_dependency 'multi_json', '~> 1.15'
 
@@ -34,4 +34,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'rack-test'
+  spec.add_development_dependency 'pry'
 end
