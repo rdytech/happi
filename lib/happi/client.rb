@@ -1,6 +1,7 @@
 require 'faraday'
 require 'faraday/follow_redirects'
 require 'faraday/multipart'
+require 'faraday/retry'
 require 'faraday/http'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
