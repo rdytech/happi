@@ -6,11 +6,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.0.0-rc2] - 2026-01-09
+### Changed
+- **BREAKING**: Removed unused dependencies: `oauth2`, `multi_json`, `faraday-follow_redirects`, and `faraday-http`
+- Changed dependency from `activemodel` to `activesupport` (only ActiveSupport features were used)
+- Applications using these gems directly must add them to their own Gemfile
+
+### Fixed
+- Fixed compatibility with faraday 2.x by removing FaradayMiddleware
+
 ## [1.0.0-rc] - 2025-07-07
 ### Updated
 - Updated all gem dependencies
 - Set ruby version min to 3.2.0
-
 
 ## [0.6.0] - 2024-11-13
 ### Added

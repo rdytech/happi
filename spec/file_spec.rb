@@ -59,4 +59,44 @@ describe Happi::File do
       specify { expect(subject.exists?).to eq(true) }
     end
   end
+
+  context "with a non-existent file" do
+    subject { Happi::File.new('/path/to/non/existent/file.txt') }
+
+    describe '#exists?' do
+      it 'returns false' do
+        expect(subject.exists?).to eq(false)
+      end
+    end
+
+    describe '#multipart' do
+      it 'returns nil when file does not exist' do
+        expect(subject.multipart).to be_nil
+      end
+    end
+
+    describe '#encode_file' do
+      it 'raises an error when trying to encode non-existent file' do
+        expect { subject.encode_file }.to raise_error(Errno::ENOENT)
+      end
+    end
+  end
+
+  context "with different file types" do
+    let(:docx_file) { File.join(__dir__, 'fixtures', 'award.docx') }
+
+    describe 'DOCX file' do
+      subject { Happi::File.new(docx_file) }
+
+      it 'detects correct MIME type' do
+        expect(subject.mime_type).to eq('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      end
+
+      it 'creates multipart for existing file' do
+        multipart = subject.multipart
+        expect(multipart).to be_an_instance_of(Faraday::UploadIO)
+        expect(multipart.original_filename).to eq('award.docx')
+      end
+    end
+  end
 end

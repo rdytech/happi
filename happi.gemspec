@@ -20,15 +20,11 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'faraday', '~> 2.13'
-  spec.add_dependency 'faraday-follow_redirects', '~> 0.3'
-  spec.add_dependency 'faraday-http', '~> 2.0'
   spec.add_dependency 'faraday-multipart', '~> 1.1'
-  spec.add_dependency 'activemodel', '>= 6.0'
-  spec.add_dependency 'oauth2', '~> 2.0'
+  spec.add_dependency 'activesupport', '>= 6.0'
   spec.add_dependency 'mime-types', '~> 3.7'
-  spec.add_dependency 'multi_json', '~> 1.15'
 
-  spec.add_development_dependency 'bundler', '~> 2.0'
+  spec.add_development_dependency 'bundler', '>= 2.0'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'cane'
   spec.add_development_dependency 'rake'
