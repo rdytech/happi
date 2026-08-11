@@ -248,10 +248,36 @@ describe Happi::Client do
   describe '#default_logger' do
     let(:client) { DerivedClient.new(host: 'http://example.com') }
 
+    def log_device(logger)
+      logger.instance_variable_get(:@logdev).dev
+    end
+
+    def stub_rails_with_logger(logger)
+      stub_const('Rails', Module.new.tap { |m| m.define_singleton_method(:logger) { logger } })
+    end
+
     context 'when Rails is not defined' do
       it 'returns a Logger writing to STDOUT' do
-        logger = client.default_logger
-        expect(logger).to be_a(Logger)
+        expect(defined?(Rails)).to be_nil
+        expect(log_device(client.default_logger)).to eq(STDOUT)
+      end
+    end
+
+    context 'when Rails is defined with a logger' do
+      let(:rails_logger) { Logger.new(File::NULL) }
+
+      before { stub_rails_with_logger(rails_logger) }
+
+      it 'returns the Rails logger' do
+        expect(client.default_logger).to equal(rails_logger)
+      end
+    end
+
+    context 'when Rails is defined without a logger' do
+      before { stub_rails_with_logger(nil) }
+
+      it 'falls back to a Logger writing to STDOUT' do
+        expect(log_device(client.default_logger)).to eq(STDOUT)
       end
     end
   end

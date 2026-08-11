@@ -26,7 +26,7 @@ Instance config is set via initializer: `MyClient.new(oauth_token: 'abc123', tim
 
 ## Key Components
 
-- **[lib/happi/client.rb](lib/happi/client.rb)**: Main HTTP client with REST verbs (get/post/patch/delete), error handling, OAuth2 middleware integration
+- **[lib/happi/client.rb](lib/happi/client.rb)**: Main HTTP client with REST verbs (get/post/patch/delete), error handling, and the OAuth2 `Authorization` header
 - **[lib/happi/configuration.rb](lib/happi/configuration.rb)**: Config object with defaults for host, port, timeout, version, use_json, log_level, token_type
 - **[lib/happi/file.rb](lib/happi/file.rb)**: Handles file uploads with MIME type detection, converts to Faraday::UploadIO for multipart requests
 - **[lib/happi/error.rb](lib/happi/error.rb)**: HTTP error hierarchy mapping status codes (400-504) to specific exception classes
@@ -66,7 +66,9 @@ Controlled by `config.use_json` flag:
 - `true`: Encodes requests as JSON and parses JSON responses
 
 ### OAuth2 Token Types
-Set `token_type: 'bearer'` to pass OAuth tokens only as Authorization header (not as query param). This avoids faraday_middleware warnings. See [CHANGELOG.md](CHANGELOG.md#L30) for context.
+The token is applied as a plain `Authorization` header built in `Client#connection` -
+there is no OAuth2 middleware. `token_type` overrides the `Bearer` scheme (e.g.
+`token_type: 'bearer'`); when `oauth_token` is blank no header is set at all.
 
 ### Logging Behavior
 - `log_level: :debug` logs full request bodies/params (can generate large logs)
@@ -81,10 +83,14 @@ client.get('templates')  # Requests /api/v1/templates
 
 ## Dependencies
 - **faraday ~> 2.13**: Core HTTP client
-- **oauth2 ~> 2.0**: Authentication (via FaradayMiddleware::OAuth2)
-- **activemodel >= 6.0**: Provides `with_indifferent_access` for response hashes
-- **mime-types**: File MIME type detection
+- **faraday-multipart ~> 1.1**: Multipart requests and `Faraday::UploadIO`
+- **activesupport >= 6.0**: Provides `with_indifferent_access` for response hashes
+- **mime-types ~> 3.7**: File MIME type detection
 - Ruby >= 3.2.0
+
+`faraday_middleware` is deliberately absent - it was never Faraday 2.x compatible. `oauth2`,
+`multi_json`, `faraday-follow_redirects` and `faraday-http` were dropped in 1.0.0-rc2; do not
+reintroduce them. See [CHANGELOG.md](CHANGELOG.md).
 
 ## Testing Patterns
 Specs extensively test configuration isolation, multipart param checking, and connection options. When adding features:

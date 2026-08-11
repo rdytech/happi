@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - **BREAKING**: Removed unused dependencies: `oauth2`, `multi_json`, `faraday-follow_redirects`, and `faraday-http`
 - Changed dependency from `activemodel` to `activesupport` (only ActiveSupport features were used)
 - Applications using these gems directly must add them to their own Gemfile
+- Packaged gem now contains only runtime files. Specs (and their 2MB fixture), research
+  notes and CI config are no longer shipped, taking the gem from ~2.1MB to ~14KB. The
+  deprecated `spec.test_files` directive was removed along with them.
+
+### Removed
+- Buildkite pipeline, superseded by the GitHub Actions workflow (it still provisioned Ruby 2.1.5)
 
 ### Fixed
 - Fixed compatibility with faraday 2.x by removing FaradayMiddleware
