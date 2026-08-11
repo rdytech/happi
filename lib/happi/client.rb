@@ -1,3 +1,4 @@
+require 'logger'
 require 'faraday'
 require 'faraday/multipart'
 require 'active_support/core_ext/string/inflections'

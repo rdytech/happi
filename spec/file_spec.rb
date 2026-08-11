@@ -98,5 +98,21 @@ describe Happi::File do
         expect(multipart.original_filename).to eq('award.docx')
       end
     end
+
+    describe 'unrecognised extension' do
+      # Characterisation test, not an endorsement: MIME::Types.type_for returns []
+      # for an unknown extension, so #initialize calls content_type on nil instead
+      # of falling back to a generic type.
+      #
+      # Pinned because it is the only mime-types behaviour this suite is sensitive
+      # to - the asserted .rb and .docx mappings are identical from mime-types 2.4
+      # through 3.7. If a mime-types-data release ever claims this extension, or the
+      # nil is handled properly, this spec fails and says so.
+      it 'raises rather than falling back to a generic type' do
+        expect(MIME::Types.type_for('report.zzzunknown')).to be_empty
+        expect { Happi::File.new('report.zzzunknown') }
+          .to raise_error(NoMethodError, /content_type/)
+      end
+    end
   end
 end

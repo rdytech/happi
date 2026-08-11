@@ -447,4 +447,84 @@ describe Happi::Client do
       end
     end
   end
+
+  # The specs above stub the connection out entirely, so nothing exercises the
+  # middleware stack itself. These drive the real stack and stub only the
+  # transport, which is what catches encoding/parsing regressions across
+  # faraday versions.
+  describe 'round trip through the middleware stack' do
+    let(:stubs) { Faraday::Adapter::Test::Stubs.new }
+
+    def client_for(**options)
+      DerivedClient.new(host: 'http://example.com', oauth_token: 'test_token', **options).tap do |client|
+        allow(client).to receive(:logger).and_return(Logger.new(nil))
+        client.connection.builder.adapter(:test, stubs)
+      end
+    end
+
+    context 'with use_json enabled' do
+      let(:client) { client_for(use_json: true) }
+
+      it 'parses a JSON response body into an indifferent hash' do
+        stubs.get('/api/v1/templates') do
+          [200, { 'Content-Type' => 'application/json' }, '{"templates":[{"name":"first"}]}']
+        end
+
+        result = client.get('templates')
+
+        expect(result[:templates].first[:name]).to eq('first')
+        expect(result['templates'].first['name']).to eq('first')
+      end
+
+      it 'encodes the request body as JSON and sends the Authorization header' do
+        sent_body = nil
+        sent_headers = nil
+        stubs.post('/api/v1/templates') do |env|
+          # env.body is overwritten with the response body once this returns
+          sent_body = env.body
+          sent_headers = env.request_headers.dup
+          [201, { 'Content-Type' => 'application/json' }, '{}']
+        end
+
+        client.post('templates', template: { name: 'test' })
+
+        expect(sent_headers['Content-Type']).to eq('application/json')
+        expect(sent_headers['Authorization']).to eq('Bearer test_token')
+        expect(JSON.parse(sent_body)).to eq('template' => { 'name' => 'test' })
+      end
+
+      it 'raises the mapped error for a real error status' do
+        stubs.get('/api/v1/templates/1') do
+          [422, { 'Content-Type' => 'application/json' }, '{"errors":"Name is required"}']
+        end
+
+        expect { client.get('templates/1') }.to raise_error(Happi::Error::UnprocessableEntity) do |error|
+          expect(error.response.status).to eq(422)
+          expect(error.response.body['errors']).to eq('Name is required')
+        end
+      end
+    end
+
+    context 'with use_json disabled' do
+      let(:client) { client_for(use_json: false) }
+      let(:upload) { Happi::File.new(File.join(__dir__, 'fixtures', 'award.docx')) }
+
+      # Driven through #connection rather than #post because no response parser
+      # is registered on this path, so the body arrives as a String.
+      it 'encodes a Happi::File as multipart form data' do
+        sent_body = nil
+        sent_headers = nil
+        stubs.post('/api/v1/documents') do |env|
+          sent_body = env.body
+          sent_headers = env.request_headers.dup
+          [200, {}, '']
+        end
+
+        client.connection.post(client.url('documents'), client.param_check(document: { file: upload }))
+
+        expect(sent_headers['Content-Type']).to start_with('multipart/form-data')
+        expect(sent_body).to be_a(Faraday::Multipart::CompositeReadIO)
+      end
+    end
+  end
 end
