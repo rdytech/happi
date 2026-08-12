@@ -64,10 +64,19 @@ pin this down — preserve it when touching `config`.
 
 `FaradayMiddleware` is gone as of 1.0.0-rc2 — it was never compatible with Faraday 2.x and
 was never actually a declared dependency. The OAuth2 Authorization header is now set by
-hand in `connection` (`"#{token_type || 'Bearer'} #{oauth_token}"`), and JSON uses
-Faraday's built-in `:json` request/response middleware. `oauth2`, `multi_json`,
+hand in `connection`, only when `config.oauth_token.present?`, as
+`"#{config.token_type.presence || 'Bearer'} #{config.oauth_token}"`. JSON uses Faraday's
+built-in `:json` request/response middleware. `oauth2`, `multi_json`,
 `faraday-follow_redirects`, and `faraday-http` were dropped; `activemodel` became
 `activesupport`. Do not reintroduce `faraday_middleware`.
+
+`token_type` is now interpolated verbatim as the auth scheme. In 0.6.0 it was a *mode*
+selector for `FaradayMiddleware::OAuth2`, where `'param'` meant "send the token as an
+`access_token` query parameter plus a `Token token="…"` header". That mode is gone —
+`token_type: 'param'` now just emits the malformed header `Authorization: param <token>`.
+Restoring it was considered for 1.0.0 and deliberately rejected; the breaking change is
+documented in `CHANGELOG.md` for consumers to absorb. `context/TOKEN_TYPE_PARAM.md` is the
+research behind that decision, not a work order.
 
 `context/` holds the research notes from that migration (`faraday_2.x.md`,
 `oauth2.md`, `FARADAY_2_COMPATIBILITY_REPORT.md`). Background reading, not specs.
@@ -76,10 +85,14 @@ Faraday's built-in `:json` request/response middleware. `oauth2`, `multi_json`,
 
 - **`config.port` and `config.timeout` are inert.** `connection` calls
   `Faraday.new(config.host)` with no options hash. Port must be embedded in `host`.
-- **`use_json: false` (the default) registers no response parser.** Faraday 2 leaves the
-  body a `String`, and `String` has no `with_indifferent_access`, so reads raise
-  `NoMethodError`. In practice callers need `use_json: true`. The specs only exercise
-  connection construction, never a real round-trip, so this isn't caught.
+- **Response parsing is gated on an exact `application/json` content type.** `connection`
+  registers `f.response :json, content_type: 'application/json'` unconditionally — that
+  part is not affected by `use_json`, which selects the *request* encoding only. But the
+  match is string equality against the bare type, so a server answering
+  `application/vnd.api+json`, `text/json`, or no `Content-Type` leaves the body a `String`,
+  and `String` has no `with_indifferent_access` — every `get`/`post`/`patch`/`delete` then
+  raises `NoMethodError`. Widen the `content_type:` option rather than reaching for
+  `use_json`.
 - **Error messages are static.** `Happi::Error` subclasses override `#message` with fixed
   strings, discarding the API body passed to `new`. The real payload is only reachable via
   `error.response`. Also `TooManyRequests` (429) is nested under `ServerError`, not
