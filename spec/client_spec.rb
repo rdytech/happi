@@ -509,21 +509,43 @@ describe Happi::Client do
       let(:client) { client_for(use_json: false) }
       let(:upload) { Happi::File.new(File.join(__dir__, 'fixtures', 'award.docx')) }
 
-      # Driven through #connection rather than #post because no response parser
-      # is registered on this path, so the body arrives as a String.
       it 'encodes a Happi::File as multipart form data' do
         sent_body = nil
         sent_headers = nil
         stubs.post('/api/v1/documents') do |env|
           sent_body = env.body
           sent_headers = env.request_headers.dup
-          [200, {}, '']
+          [200, { 'Content-Type' => 'application/json' }, '{"document":{"id":1}}']
         end
 
-        client.connection.post(client.url('documents'), client.param_check(document: { file: upload }))
+        result = client.post('documents', document: { file: upload })
 
         expect(sent_headers['Content-Type']).to start_with('multipart/form-data')
         expect(sent_body).to be_a(Faraday::Multipart::CompositeReadIO)
+        expect(result[:document][:id]).to eq(1)
+      end
+
+      # Regression: 0.6.0 registered ParseJson unconditionally, so responses were
+      # parsed on this branch too. When that moved inside the use_json branch every
+      # client defaulting to use_json: false got a String body, and #get's
+      # .with_indifferent_access raised NoMethodError.
+      it 'still parses a JSON response body' do
+        stubs.get('/api/v1/documents') do
+          [200, { 'Content-Type' => 'application/json' }, '{"documents":[{"name":"first"}]}']
+        end
+
+        result = client.get('documents')
+
+        expect(result).to be_a(Hash)
+        expect(result[:documents].first[:name]).to eq('first')
+      end
+
+      it 'leaves a non-JSON response body untouched' do
+        stubs.get('/api/v1/documents/1/raw') do
+          [200, { 'Content-Type' => 'text/plain' }, 'plain text']
+        end
+
+        expect { client.get('documents/1/raw') }.to raise_error(NoMethodError)
       end
     end
   end

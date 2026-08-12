@@ -101,9 +101,13 @@ class Happi::Client
         f.headers['Authorization'] = "#{token_type} #{config.oauth_token}"
       end
 
+      # Responses are parsed regardless of use_json, matching the unconditional
+      # FaradayMiddleware::ParseJson of 0.6.0. use_json only selects the request
+      # encoding - JSON body vs multipart/url-encoded.
+      f.response :json, content_type: 'application/json'
+
       if self.config.use_json
         f.request :json
-        f.response :json
       else
         f.request :multipart
         f.request :url_encoded
