@@ -76,7 +76,6 @@ Faraday's built-in `:json` request/response middleware. `oauth2`, `multi_json`,
 
 - **`config.port` and `config.timeout` are inert.** `connection` calls
   `Faraday.new(config.host)` with no options hash. Port must be embedded in `host`.
-  Same for `connection_options` — it's defined and spec'd but nothing calls it.
 - **`use_json: false` (the default) registers no response parser.** Faraday 2 leaves the
   body a `String`, and `String` has no `with_indifferent_access`, so reads raise
   `NoMethodError`. In practice callers need `use_json: true`. The specs only exercise

@@ -37,6 +37,9 @@ to 0.6.0.
   `spec.test_files` directive was removed along with them.
 
 ### Removed
+- **BREAKING**: `Happi::Client#connection_options`. It built an options hash for
+  `FaradayMiddleware::OAuth2` and has had no callers since that middleware was dropped —
+  `#connection` never consulted it. Subclasses that overrode it were already having no effect.
 - All `FaradayMiddleware` usage. The gem was never compatible with Faraday 2.x and was not a
   declared dependency of Happi.
 - Travis and Buildkite CI configuration, superseded by the GitHub Actions workflow (Buildkite

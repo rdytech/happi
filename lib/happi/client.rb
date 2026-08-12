@@ -117,14 +117,6 @@ class Happi::Client
     end
   end
 
-  def connection_options
-    if config.token_type.present?
-      { token_type: config.token_type }
-    else
-      { }
-    end
-  end
-
   def errors
     @errors ||= {
       400 => Happi::Error::BadRequest,
