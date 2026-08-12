@@ -12,9 +12,20 @@ to 0.6.0.
 
 ### Changed
 - **BREAKING**: OAuth2 tokens are sent only as an `Authorization` header. `FaradayMiddleware::OAuth2`
-  previously also appended the token as a query string parameter unless `token_type` was set, so
-  servers reading it from the query string will no longer receive it. The scheme defaults to
-  `Bearer` and is overridden by `token_type`; no header is set when `oauth_token` is blank.
+  defaulted to its `'param'` token type, which appended the token as an `access_token` query string
+  parameter *and* set an `Authorization: Token token="…"` header; that applied whenever `token_type`
+  was unset or explicitly `'param'`. Servers reading the token from the query string will no longer
+  receive it. The scheme now defaults to `Bearer` and is overridden by `token_type`; no header is set
+  when `oauth_token` is blank.
+- **BREAKING**: `token_type` has changed meaning. It was a mode selector for
+  `FaradayMiddleware::OAuth2` accepting `'param'` or `'bearer'`; it is now interpolated verbatim as
+  the `Authorization` scheme. Two consequences for 0.6.0 consumers:
+  - `token_type: 'param'` produces the malformed header `Authorization: param <token>` and no query
+    parameter. There is no replacement for the query-string mode in 1.0.0 — remove the setting and
+    have the server read the token from the `Authorization` header. Tokens in query strings end up
+    in access logs, proxy caches and `Referer` headers, which is why the mode is gone.
+  - `token_type: 'bearer'` now emits `bearer <token>` where 0.6.0 normalised it to `Bearer <token>`.
+    Scheme names are case-insensitive per RFC 7235 §2.1, so conforming servers are unaffected.
 - **BREAKING**: Removed the `oauth2`, `multi_json`, `faraday-follow_redirects` and `faraday-http`
   dependencies. Applications using these directly must add them to their own Gemfile.
 - **BREAKING**: Minimum Ruby is now 3.2.0.
