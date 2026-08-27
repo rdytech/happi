@@ -14,21 +14,21 @@ Gem::Specification.new do |spec|
   spec.license       = "MIT"
   spec.required_ruby_version = '>= 3.2.0'
 
-  spec.files         = `git ls-files`.split($/)
+  # Ship only what a consumer needs at runtime. Specs (and their 2MB fixture),
+  # research notes and CI/editor config stay in the repo but out of the gem.
+  excluded_prefixes = %w[spec/ context/ .github/ .devcontainer/]
+  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
+    f.start_with?(*excluded_prefixes) || f.end_with?('.gem')
+  end
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'faraday', '~> 2.13'
-  spec.add_dependency 'faraday-follow_redirects', '~> 0.3'
-  spec.add_dependency 'faraday-http', '~> 2.0'
+  spec.add_dependency 'faraday', '>= 1.10.0'
   spec.add_dependency 'faraday-multipart', '~> 1.1'
-  spec.add_dependency 'activemodel', '>= 6.0'
-  spec.add_dependency 'oauth2', '~> 2.0'
-  spec.add_dependency 'mime-types', '~> 3.7'
-  spec.add_dependency 'multi_json', '~> 1.15'
+  spec.add_dependency 'activesupport', '>= 6.0'
+  spec.add_dependency 'mime-types', '>= 2.4.0'
 
-  spec.add_development_dependency 'bundler', '~> 2.0'
+  spec.add_development_dependency 'bundler', '>= 2.0'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'cane'
   spec.add_development_dependency 'rake'

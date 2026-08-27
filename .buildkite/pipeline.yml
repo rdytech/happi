@@ -1,8 +1,0 @@
----
-
-steps:
-  - command: .buildkite/scripts/tests.sh
-    label: "Build :llama:"
-    agents:
-      - "queue=default"
-    timeout: 60
