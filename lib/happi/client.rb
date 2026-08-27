@@ -1,7 +1,6 @@
+require 'logger'
 require 'faraday'
-require 'faraday/follow_redirects'
 require 'faraday/multipart'
-require 'faraday/http'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/hash'
 
@@ -96,27 +95,25 @@ class Happi::Client
 
   def connection
     @connection ||= Faraday.new(config.host) do |f|
-      f.use FaradayMiddleware::OAuth2, config.oauth_token, connection_options
-      f.use JSON, content_type: 'application/json'
+      # Set OAuth2 Authorization header
+      if config.oauth_token.present?
+        token_type = config.token_type.presence || 'Bearer'
+        f.headers['Authorization'] = "#{token_type} #{config.oauth_token}"
+      end
+
+      # Responses are parsed regardless of use_json, matching the unconditional
+      # FaradayMiddleware::ParseJson of 0.6.0. use_json only selects the request
+      # encoding - JSON body vs multipart/url-encoded.
+      f.response :json, content_type: 'application/json'
 
       if self.config.use_json
-        f.use FaradayMiddleware::EncodeJson
         f.request :json
-        f.response :json
       else
         f.request :multipart
         f.request :url_encoded
       end
 
       f.adapter :net_http
-    end
-  end
-
-  def connection_options
-    if config.token_type.present?
-      { token_type: config.token_type }
-    else
-      { }
     end
   end
 
